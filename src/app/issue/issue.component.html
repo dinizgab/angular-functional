@@ -1,0 +1,17 @@
+@if (issue) {
+  <div class="issue-card">
+    <h2>Issue #{{ issue.number }}</h2>
+    <p><strong>Title:</strong> {{ issue.title }}</p>
+    <p><strong>State:</strong> {{ issue.state }}</p>
+    <p><strong>Created At:</strong> {{ issue.created_at }}</p>
+    <p><strong>User:</strong> {{ issue.user.login }}</p>
+    <p><strong>Labels:</strong>
+    @for (item of issue.labels; track item.id) {
+      <div>{{ item.name }}</div>
+    }
+    </p>
+    <p><strong>Body:</strong></p>
+    <p>{{ issue.body }}</p>
+    <a [href]="issue.url" target="_blank">View on GitHub</a>
+  </div>
+}
