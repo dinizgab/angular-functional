@@ -1,0 +1,10 @@
+<div>
+  <label for="labelFilter">Filter by Label:</label>
+  <select [(ngModel)]="selectedLabel" (change)="onLabelChange($event)">
+    <option value="">All</option>
+    <option value="empty">No labels</option>
+    @for (label of labels; track label) {
+      <option value="{{ label }}">{{ label }}</option>
+    }
+  </select>
+</div>

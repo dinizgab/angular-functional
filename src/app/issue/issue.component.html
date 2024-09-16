@@ -1,17 +1,32 @@
 @if (issue) {
-  <div class="issue-card">
-    <h2>Issue #{{ issue.number }}</h2>
-    <p><strong>Title:</strong> {{ issue.title }}</p>
-    <p><strong>State:</strong> {{ issue.state }}</p>
-    <p><strong>Created At:</strong> {{ issue.created_at }}</p>
-    <p><strong>User:</strong> {{ issue.user.login }}</p>
-    <p><strong>Labels:</strong>
-    @for (item of issue.labels; track item.id) {
-      <div>{{ item.name }}</div>
-    }
-    </p>
-    <p><strong>Body:</strong></p>
-    <p>{{ issue.body }}</p>
-    <a [href]="issue.url" target="_blank">View on GitHub</a>
+<div class="issue-card">
+  <h1>Issue #{{ issue.number }}: {{ issue.title }}</h1>
+  <p><strong>State:</strong> {{ issue.state }}</p>
+  <p><strong>Created At:</strong> {{ issue.created_at | date:'short'}}</p>
+  <p><strong>User:</strong> {{ issue.user.login }}</p>
+
+  @if (issue.labels.length > 0) {
+  <div class='labels-container'>
+    <strong class='labels-title'>Labels:</strong>
+    <div class="labels-container">
+      @for (label of issue.labels; track label.id) {
+        <span class="label-name"
+              [style.color]="'#' + label.color"
+              [style.backgroundColor]="label.rgbaColor"
+              [style.border]="'1px solid #' + label.color"
+              [style.borderRadius]="'5rem'"
+            >
+          {{ label.name }}
+        </span>
+      }
+    </div>
   </div>
+  }
+
+  <div class="url-container">
+    <a [href]="issue.url" target="_blank" rel="noopener noreferrer">
+      View on GitHub
+    </a>
+  </div>
+</div>
 }
