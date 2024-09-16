@@ -57,6 +57,7 @@ export class IssuesService {
 export class AppComponent {
   issues: Issue[] | undefined;
   issues$: Observable<Issue[]>;
+  filteredIssues: Issue[] = [];
   uniqueLabels: string[] = [];
 
   http = inject(HttpClient);
@@ -66,12 +67,9 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    this.resetIssues();
-  }
-
-  private resetIssues() {
     this.issues$.subscribe((data) => {
       this.issues = data;
+      this.filteredIssues = data;
       this.extractUniqueLabels();
     });
   }
@@ -89,8 +87,8 @@ export class AppComponent {
   onLabelChange(label: string) {
     if (!this.issues) return;
 
-    if (label === '') this.resetIssues();
-    else if (label === 'empty') this.issues = this.issues.filter(issues => issues.labels.length === 0);
-    else this.issues = this.issues.filter(issues => issues.labels.some((l: IssueLabel) => l.name === label));
+    if (label === '') this.filteredIssues = this.issues;
+    else if (label === 'empty') this.filteredIssues = this.issues.filter(issues => issues.labels.length === 0);
+    else this.filteredIssues = this.issues.filter(issues => issues.labels.some((l: IssueLabel) => l.name === label));
   }
 }

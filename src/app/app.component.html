@@ -3,7 +3,7 @@
     [labels]="uniqueLabels"
     (labelChange)="onLabelChange($event)"
   />
-  @for (item of issues; track item.id) {
+  @for (item of filteredIssues; track item.id) {
     <app-issue [issue]="item"></app-issue>
   }
 </main>
