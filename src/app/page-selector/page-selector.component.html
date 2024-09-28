@@ -1,0 +1,16 @@
+<div class="page-selector">
+  <button
+    [disabled]="currentPage === 1"
+    (click)="onPageChange(currentPage - 1)">
+    Previous
+  </button>
+
+  <span>Page {{ currentPage }} of {{ lastPage }}</span>
+
+  <button
+    [disabled]="currentPage === lastPage"
+    (click)="onPageChange(currentPage + 1)">
+    Next
+  </button>
+</div>
+

@@ -3,6 +3,16 @@
     [labels]="uniqueLabels"
     (labelChange)="onLabelChange($event)"
   />
+  <div class="open-issues-container">
+    <input class="open-issues-input" type="checkbox" id="showOpen" [(ngModel)]="showOpen" (change)="toggleOpenIssuesFilter()" />
+    <label class="open-issues-label" for="showOpen">Show only open issues</label>
+  </div>
+
+  <page-selector
+    [currentPage]="currentPage"
+    (pageChange)="onPageChange($event)"
+  />
+
   @for (item of filteredIssues; track item.id) {
     <app-issue [issue]="item"></app-issue>
   }

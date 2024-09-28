@@ -1,0 +1,35 @@
+.page-selector {
+  color: #c9d1d9;
+  font-size: 0.95rem;
+  margin: 0.5rem 0;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  width: 25rem;
+}
+
+button {
+  width: 6rem;
+  color: #c9d1d9;
+  padding: 0.5rem 1rem;
+  background-color: #161b22;
+  border-radius: 0.5rem;
+  border: 2px solid #30363d;
+  box-shadow: 0 0.5rem 1rem rgba(51, 203, 154, 0.1);
+  font-size: 0.95rem;
+  margin: 1rem 0;
+}
+
+button:hover {
+  background-color: #30363d;
+  border: solid 2px #33cb9a;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #25292f;
+  border: solid 2px #30363d;
+  cursor: not-allowed;
+}

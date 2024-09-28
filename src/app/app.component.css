@@ -6,3 +6,17 @@ main {
   background-color: #0d1117;
   font-family: 'monospace';
 }
+
+.open-issues-container {
+  width: 40rem;
+  padding: 1rem 1.5rem;
+  background-color: #161b22;
+  border-radius: 0.5rem;
+  border: 2px solid #30363d;
+  box-shadow: 0 0.5rem 1rem rgba(51, 203, 154, 0.1);
+}
+
+.open-issues-label {
+  color: #33cb9a;
+  margin-left: 0.5rem;
+}
