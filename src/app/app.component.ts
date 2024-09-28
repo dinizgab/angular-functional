@@ -1,69 +1,37 @@
-import { Component, inject, Injectable } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import Issue from '../types/Issue';
 import IssueLabel from '../types/IssueLabel';
+import Commit from '../types/Commit';
+import { IssuesService } from './issue/issue.service';
+import { CommitsService } from './commit/commit.service';
 import { IssueComponent } from './issue/issue.component';
 import { LabelDropdownComponent } from './label-dropdown/label-dropdown.component';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-
-@Injectable(
-  { providedIn: 'root' }
-)
-export class IssuesService {
-  issues: Issue[] = [];
-  private apiUrl = "https://api.github.com/repos/rails/rails/issues";
-
-  constructor(private http: HttpClient) { }
-
-  getIssues(): Observable<Issue[]> {
-    return this.http.get<Issue[]>(this.apiUrl).pipe(
-      map((data: Issue[]) => data.map((item) => ({
-        id: item.id,
-        title: item.title,
-        body: item.body,
-        state: item.state,
-        number: item.number,
-        labels: item.labels.map(label => ({
-          ...label,
-          rgbaColor: this.convertToRgba(label.color)
-        })),
-        user: {
-          login: item.user.login,
-        },
-        created_at: item.created_at,
-        url: item.url.replace('https://api.github.com/repos', 'https://github.com')
-      })))
-    );
-  }
-
-  private convertToRgba(hex: string, alpha: number = 0.2): string {
-    const r = parseInt(hex.slice(0, 2), 16);
-    const g = parseInt(hex.slice(2, 4), 16);
-    const b = parseInt(hex.slice(4, 6), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  }
-}
-
+import { CommitComponent } from './commit/commit.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, IssueComponent, LabelDropdownComponent],
+  imports: [RouterOutlet, IssueComponent, LabelDropdownComponent, CommitComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   issues: Issue[] | undefined;
   issues$: Observable<Issue[]>;
   filteredIssues: Issue[] = [];
   uniqueLabels: string[] = [];
+  commits: Commit[] | undefined;
+  commits$: Observable<Commit[]>;
 
-  http = inject(HttpClient);
+  private issuesService = inject(IssuesService);
+  private commitsService = inject(CommitsService);
 
-  constructor(private issuesService: IssuesService) {
+  constructor(private http: HttpClient) {
     this.issues$ = this.issuesService.getIssues();
+    this.commits$ = this.commitsService.getCommits();
   }
 
   ngOnInit() {
@@ -71,6 +39,11 @@ export class AppComponent {
       this.issues = data;
       this.filteredIssues = data;
       this.extractUniqueLabels();
+    });
+
+    this.commits$.subscribe((data) => {
+      this.commits = data;
+      console.log(this.commits);
     });
   }
 
@@ -88,7 +61,7 @@ export class AppComponent {
     if (!this.issues) return;
 
     if (label === '') this.filteredIssues = this.issues;
-    else if (label === 'empty') this.filteredIssues = this.issues.filter(issues => issues.labels.length === 0);
-    else this.filteredIssues = this.issues.filter(issues => issues.labels.some((l: IssueLabel) => l.name === label));
+    else if (label === 'empty') this.filteredIssues = this.issues.filter(issue => issue.labels.length === 0);
+    else this.filteredIssues = this.issues.filter(issue => issue.labels.some((l: IssueLabel) => l.name === label));
   }
 }

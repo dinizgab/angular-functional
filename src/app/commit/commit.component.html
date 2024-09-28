@@ -1,0 +1,7 @@
+<div class="commit">
+  <h3>Commit: {{ commit.sha }}</h3>
+  <p><strong>Message:</strong> {{ commit.message }}</p>
+  <p><strong>Author:</strong> {{ commit.author.name }}</p>
+  <p><strong>Date:</strong> {{ commit.date | date:'short' }}</p>
+  <a [href]="commit.url" target="_blank">View Commit</a>
+</div>
