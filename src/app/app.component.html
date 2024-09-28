@@ -1,13 +1,4 @@
 <main class="main">
-  <label-dropdown
-    [labels]="uniqueLabels"
-    (labelChange)="onLabelChange($event)"
-  />
-  
-  @for (item of filteredIssues; track item.id) {
-    <app-issue [issue]="item"></app-issue>
-  }
-  
   <div class="commits-section">
     <h2>Commits</h2>
     @for (commit of commits; track commit.sha) {
