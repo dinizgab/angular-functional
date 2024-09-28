@@ -4,6 +4,7 @@
     (labelChange)="onLabelChange($event)"
     />
     <div class="checkboxes-container">
+      <span class="checkbox-title">Filters:</span>
       <div>
         <input class="checkbox-input" type="checkbox" id="showOpen" [(ngModel)]="showOpen" (change)="toggleOpenIssuesFilter($event)" />
         <label class="checkbox-label" for="showOpen">Show only open issues</label>
@@ -23,7 +24,7 @@
       (pageChange)="onPageChange($event)"
       />
 
-      @for (item of filteredIssues; track item.id) {
+      @for (item of (issues$ | async); track item.id) {
         <app-issue [issue]="item"></app-issue>
       }
 </main>

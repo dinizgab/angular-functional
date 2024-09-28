@@ -22,3 +22,11 @@ main {
   color: #c9d1d9;
   margin-left: 0.5rem;
 }
+
+span {
+  color: #c9d1d9;
+}
+
+input[type="checkbox"]:checked {
+  color: #33cb9a;
+}

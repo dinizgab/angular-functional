@@ -3,12 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import Issue from '../types/Issue';
-import IssueLabel from '../types/IssueLabel';
 import { IssueComponent } from './issue/issue.component';
 import { LabelDropdownComponent } from './label-dropdown/label-dropdown.component';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PageSelectorComponent } from './page-selector/page-selector.component';
+import { AsyncPipe } from '@angular/common';
 
 @Injectable(
   { providedIn: 'root' }
@@ -62,14 +62,12 @@ export class IssuesService {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, IssueComponent, LabelDropdownComponent, FormsModule, PageSelectorComponent],
+  imports: [RouterOutlet, IssueComponent, LabelDropdownComponent, FormsModule, PageSelectorComponent, AsyncPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  issues: Issue[] | undefined;
   issues$: Observable<Issue[]>;
-  filteredIssues: Issue[] = [];
   uniqueLabels: string[] = [];
   showOpen: boolean = false;
   orderByComments: boolean = false;
@@ -80,64 +78,68 @@ export class AppComponent {
   http = inject(HttpClient);
 
   constructor(private issuesService: IssuesService) {
-    this.issues$ = this.issuesService.getIssues();
+    this.issues$ = this.issuesService.getIssues().pipe(
+      map((data) => this.applyFilters(data))
+    );
+
+    console.log(this.issues$);
   }
 
   ngOnInit() {
     this.issues$.subscribe((data) => {
-      this.issues = data;
-      this.filteredIssues = data;
-      this.extractUniqueLabels()
+      this.extractUniqueLabels(data)
     });
   }
 
-  private extractUniqueLabels() {
-    if (!this.issues) return;
-
-    this.uniqueLabels = this.issues.flatMap(issue => issue.labels)
+  private extractUniqueLabels(issues: Issue[]) {
+    this.uniqueLabels = issues.flatMap(issue => issue.labels)
       .filter((label, index, self) => self.findIndex(l => l.id === label.id) === index)
       .map(label => label.name);
   }
 
   onLabelChange(label: string) {
-    if (!this.issues) return;
-
     this.selectedLabel = label;
-    if (label === '') this.filteredIssues = this.issues;
-    else if (label === 'empty') this.filteredIssues = this.issues.filter(issues => issues.labels.length === 0);
-    else this.filteredIssues = this.issues.filter(issues => issues.labels.some((l: IssueLabel) => l.name === label));
+    this.issues$ = this.issuesService.getIssues().pipe(
+      map((data) => this.applyFilters(data.filter(issue => {
+        if (label === '') return true;
+        if (label === 'empty') return issue.labels.length === 0;
+        return issue.labels.some(l => l.name === label);
+      })))
+    );
   }
 
   toggleOpenIssuesFilter(e: any) {
     this.showOpen = e.target.checked;
-    this.applyFilters();
+    this.issues$ = this.issuesService.getIssues().pipe(
+      map((data) => this.applyFilters(data))
+    );
   }
 
   toggleOrderByComments(e: any) {
     this.orderByComments = e.target.checked;
-    this.applyFilters();
+    this.issues$ = this.issuesService.getIssues().pipe(
+      map((data) => this.applyFilters(data))
+    );
   }
 
   toggleOrderByCreatedDate(e: any) {
     this.orderByCreatedDate = e.target.checked;
-    this.applyFilters();
+    this.issues$ = this.issuesService.getIssues().pipe(
+      map((data) => this.applyFilters(data))
+    );
   }
 
   onPageChange(page: number) {
     this.currentPage = page;
     this.issuesService.setPage(page);
-    this.issuesService.getIssues().subscribe((data) => {
-      this.issues = data;
-      this.filteredIssues = data;
-      this.extractUniqueLabels();
-      this.applyFilters();
-    });
+
+    this.issues$ = this.issuesService.getIssues().pipe(
+      map((data) => this.applyFilters(data))
+    );
   }
 
-  applyFilters() {
-    if (!this.issues) return;
-
-    let filtered = [...this.issues];
+  applyFilters(issues: Issue[]): Issue[] {
+    let filtered = [...issues];
 
     if (this.showOpen) {
       filtered = filtered.filter(issue => issue.state === 'open');
@@ -156,7 +158,6 @@ export class AppComponent {
       filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     }
 
-    this.filteredIssues = filtered;
-    this.onLabelChange(this.selectedLabel);
+    return filtered;
   }
 }
