@@ -4,17 +4,25 @@ import { Observable } from 'rxjs';
 import Commit from '../types/Commit';
 import { CommitsService } from './commit/commit.service';
 import { CommitComponent } from './commit/commit.component';
+import { groupBy, orderBy } from './utils/utils'; 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommitComponent],
+  imports: [RouterOutlet, CommitComponent, CommonModule, FormsModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   commits: Commit[] | undefined;
   commits$: Observable<Commit[]>;
+  filteredCommits: Commit[] | undefined;
+  contributors: { name: string; count: number }[] = [];
+
+  showContributors: boolean = false;
+  selectedAuthor: string = '';
 
   private commitsService = inject(CommitsService);
 
@@ -25,15 +33,40 @@ export class AppComponent {
   ngOnInit() {
     this.commits$.subscribe((data) => {
       this.commits = data;
+      this.filteredCommits = this.commits;
+      this.contributors = this.getContributors();
       console.log(this.commits);
     });
   }
 
-  // onLabelChange(label: string) {
-  //   if (!this.issues) return;
+  getContributors(): { name: string; count: number }[] {
+    const groupedCommits = groupBy(this.commits || [], 'author.name');
+    const contributors = Object.entries(groupedCommits).map(([name, commits]) => ({
+      name,
+      count: commits.length,
+    }));
 
-  //   if (label === '') this.filteredIssues = this.issues;
-  //   else if (label === 'empty') this.filteredIssues = this.issues.filter(issue => issue.labels.length === 0);
-  //   else this.filteredIssues = this.issues.filter(issue => issue.labels.some((l: IssueLabel) => l.name === label));
-  // }
+    return orderBy(contributors, 'count');
+  }
+
+  filterCommitsByAuthor() {
+    if (!this.commits) return;
+
+    if (this.selectedAuthor) {
+      this.filteredCommits = this.commits.filter(commit =>
+        commit.author.name.toLowerCase().includes(this.selectedAuthor.toLowerCase())
+      );
+    } else {
+      this.filteredCommits = this.commits;
+    }
+  }
+
+  sortCommitsByDate() {
+    this.commits = orderBy(this.commits || [], 'date');
+    this.filteredCommits = this.commits; 
+  }
+
+  toggleContributors() {
+    this.showContributors = !this.showContributors;
+  }
 }

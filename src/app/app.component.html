@@ -1,10 +1,40 @@
-<main class="main">
-  <div class="commits-section">
-    <h2>Commits</h2>
-    @for (commit of commits; track commit.sha) {
-      <app-commit [commit]="commit"></app-commit>
-    }
-  </div>
-</main>
+<div>
+  <h1>Commits</h1>
+  
+  <label for="authorFilter">Filtrar por Autor:</label>
+  <input id="authorFilter" [(ngModel)]="selectedAuthor" (input)="filterCommitsByAuthor()" placeholder="Digite o nome do autor" />
 
-<router-outlet />
+  <button (click)="sortCommitsByDate()">Ordenar por Data</button>
+  
+  <button (click)="toggleContributors()">Mostrar/Ocultar Contribuidores</button>
+
+  <div *ngIf="showContributors">
+    <h2>Contribuidores</h2>
+    <ul>
+      <li *ngFor="let contributor of contributors">
+        {{ contributor.name }} - {{ contributor.count }} commits
+      </li>
+    </ul>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>SHA</th>
+        <th>Mensagem</th>
+        <th>Autor</th>
+        <th>Data</th>
+        <th>URL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let commit of filteredCommits">
+        <td>{{ commit.sha }}</td>
+        <td>{{ commit.message }}</td>
+        <td>{{ commit.author.name }}</td>
+        <td>{{ commit.date }}</td>
+        <td><a [href]="commit.url" target="_blank">Link</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
