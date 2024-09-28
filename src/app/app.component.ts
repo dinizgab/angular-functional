@@ -145,6 +145,14 @@ export class AppComponent {
       filtered = filtered.filter(issue => issue.state === 'open');
     }
 
+    if (this.selectedLabel !== '') {
+      if (this.selectedLabel === 'empty') {
+        filtered = filtered.filter(issue => issue.labels.length === 0);
+      } else {
+        filtered = filtered.filter(issue => issue.labels.some(l => l.name === this.selectedLabel));
+      }
+    }
+
     if (this.orderByComments && this.orderByCreatedDate) {
       filtered.sort((a, b) => {
         if (a.comments === b.comments) {
