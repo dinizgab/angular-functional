@@ -4,6 +4,7 @@
   <p><strong>State:</strong> {{ issue.state }}</p>
   <p><strong>Created At:</strong> {{ issue.created_at | date:'short'}}</p>
   <p><strong>User:</strong> {{ issue.user.login }}</p>
+  <p><strong>Comments:</strong> {{ issue.comments }}</p>
 
   @if (issue.labels.length > 0) {
   <div class='labels-container'>

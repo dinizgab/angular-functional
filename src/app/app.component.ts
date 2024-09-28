@@ -19,7 +19,7 @@ export class IssuesService {
   private apiUrl;
 
   constructor(private http: HttpClient) {
-    this.currentPage= 1;
+    this.currentPage = 1;
     this.apiUrl = `https://api.github.com/repos/rails/rails/issues?per_page=100&page=${this.currentPage}`;
   }
 
@@ -72,6 +72,9 @@ export class AppComponent {
   filteredIssues: Issue[] = [];
   uniqueLabels: string[] = [];
   showOpen: boolean = false;
+  orderByComments: boolean = false;
+  orderByCreatedDate: boolean = false;
+  selectedLabel: string = '';
   currentPage: number = 1;
 
   http = inject(HttpClient);
@@ -84,7 +87,7 @@ export class AppComponent {
     this.issues$.subscribe((data) => {
       this.issues = data;
       this.filteredIssues = data;
-      this.extractUniqueLabels();
+      this.extractUniqueLabels()
     });
   }
 
@@ -99,17 +102,25 @@ export class AppComponent {
   onLabelChange(label: string) {
     if (!this.issues) return;
 
+    this.selectedLabel = label;
     if (label === '') this.filteredIssues = this.issues;
     else if (label === 'empty') this.filteredIssues = this.issues.filter(issues => issues.labels.length === 0);
     else this.filteredIssues = this.issues.filter(issues => issues.labels.some((l: IssueLabel) => l.name === label));
   }
 
-  toggleOpenIssuesFilter() {
-    this.showOpen = !this.showOpen;
-    if (!this.issues) return;
+  toggleOpenIssuesFilter(e: any) {
+    this.showOpen = e.target.checked;
+    this.applyFilters();
+  }
 
-    if (this.showOpen) this.filteredIssues = this.issues.filter(issues => issues.state === 'open');
-    else this.filteredIssues
+  toggleOrderByComments(e: any) {
+    this.orderByComments = e.target.checked;
+    this.applyFilters();
+  }
+
+  toggleOrderByCreatedDate(e: any) {
+    this.orderByCreatedDate = e.target.checked;
+    this.applyFilters();
   }
 
   onPageChange(page: number) {
@@ -119,6 +130,33 @@ export class AppComponent {
       this.issues = data;
       this.filteredIssues = data;
       this.extractUniqueLabels();
+      this.applyFilters();
     });
+  }
+
+  applyFilters() {
+    if (!this.issues) return;
+
+    let filtered = [...this.issues];
+
+    if (this.showOpen) {
+      filtered = filtered.filter(issue => issue.state === 'open');
+    }
+
+    if (this.orderByComments && this.orderByCreatedDate) {
+      filtered.sort((a, b) => {
+        if (a.comments === b.comments) {
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        }
+        return b.comments - a.comments;
+      });
+    } else if (this.orderByComments) {
+      filtered.sort((a, b) => b.comments - a.comments);
+    } else if (this.orderByCreatedDate) {
+      filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    }
+
+    this.filteredIssues = filtered;
+    this.onLabelChange(this.selectedLabel);
   }
 }

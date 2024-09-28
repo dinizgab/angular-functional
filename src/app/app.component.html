@@ -2,20 +2,30 @@
   <label-dropdown
     [labels]="uniqueLabels"
     (labelChange)="onLabelChange($event)"
-  />
-  <div class="open-issues-container">
-    <input class="open-issues-input" type="checkbox" id="showOpen" [(ngModel)]="showOpen" (change)="toggleOpenIssuesFilter()" />
-    <label class="open-issues-label" for="showOpen">Show only open issues</label>
-  </div>
+    />
+    <div class="checkboxes-container">
+      <div>
+        <input class="checkbox-input" type="checkbox" id="showOpen" [(ngModel)]="showOpen" (change)="toggleOpenIssuesFilter($event)" />
+        <label class="checkbox-label" for="showOpen">Show only open issues</label>
+      </div>
+      <div>
+        <input class="checkbox-input" type="checkbox" id="orderByComments" [(ngModel)]="orderByComments" (change)="toggleOrderByComments($event)" />
+        <label class="checkbox-label" for="orderByComments">Order by comments</label>
+      </div>
+      <div>
+        <input class="checkbox-input" type="checkbox" id="orderByCreatedDate" [(ngModel)]="orderByCreatedDate" (change)="toggleOrderByCreatedDate($event)" />
+        <label class="checkbox-label" for="orderByCreatedDate">Order by created date</label>
+      </div>
+    </div>
 
-  <page-selector
-    [currentPage]="currentPage"
-    (pageChange)="onPageChange($event)"
-  />
+    <page-selector
+      [currentPage]="currentPage"
+      (pageChange)="onPageChange($event)"
+      />
 
-  @for (item of filteredIssues; track item.id) {
-    <app-issue [issue]="item"></app-issue>
-  }
+      @for (item of filteredIssues; track item.id) {
+        <app-issue [issue]="item"></app-issue>
+      }
 </main>
 
 <router-outlet />
