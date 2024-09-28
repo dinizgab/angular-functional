@@ -1,5 +1,38 @@
-label {
-  margin: 0.3rem 0;
-  font-size: 0.95rem;
+.filter-container {
+  background-color: #1b1f24;
+  border-radius: 0.5rem;
+  border: 2px solid #30363d;
+  box-shadow: 0 0.5rem 1rem rgba(51, 203, 154, 0.1);
+  padding: 1rem 1.5rem;
+  margin: 1rem 0;
   color: #c9d1d9;
+  width: 40rem;
+  overflow-wrap: break-word;
 }
+
+.filter-label {
+  color: #c9d1d9;
+  font-size: 0.95rem;
+  margin: 0.5rem 0;
+  font-weight: 600;
+}
+
+.filter-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #2d3748;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filter-select:focus {
+  border: 1px solid #33cb9a;
+  border-color: #33cb9a;
+  box-shadow: 0 0 0 3px #33cb9a;
+  outline: none;
+}
+

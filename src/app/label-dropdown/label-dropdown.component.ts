@@ -15,6 +15,5 @@ export class LabelDropdownComponent {
 
   public onLabelChange(event: any): void {
     this.labelChange.emit(event.target.value);
-    console.log('Selected label:', event.target.value);
   }
 }

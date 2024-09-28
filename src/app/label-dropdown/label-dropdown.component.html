@@ -1,6 +1,11 @@
-<div>
-  <label for="labelFilter">Filter by Label:</label>
-  <select [(ngModel)]="selectedLabel" (change)="onLabelChange($event)">
+<div class="filter-container">
+  <label for="labelFilter" class="filter-label">Filter by Label:</label>
+  <select
+    id="labelFilter"
+    [(ngModel)]="selectedLabel"
+    (change)="onLabelChange($event)"
+    class="filter-select"
+  >
     <option value="">All</option>
     <option value="empty">No labels</option>
     @for (label of labels; track label) {
@@ -8,3 +13,4 @@
     }
   </select>
 </div>
+

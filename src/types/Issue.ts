@@ -12,6 +12,7 @@ type Issue = {
   };
   created_at: string;
   url: string;
+  comments: number;
 };
 
 export default Issue;
