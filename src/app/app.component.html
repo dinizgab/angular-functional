@@ -1,40 +1,32 @@
 <div>
   <h1>Commits</h1>
-  
-  <label for="authorFilter">Filtrar por Autor:</label>
-  <input id="authorFilter" [(ngModel)]="selectedAuthor" (input)="filterCommitsByAuthor()" placeholder="Digite o nome do autor" />
 
-  <button (click)="sortCommitsByDate()">Ordenar por Data</button>
-  
-  <button (click)="toggleContributors()">Mostrar/Ocultar Contribuidores</button>
+  <div class="action-container">
+    <label for="authorFilter">Filtrar por Autor:</label>
+    <input id="authorFilter" [(ngModel)]="selectedAuthor" (input)="filterCommitsByAuthor()" placeholder="Digite o nome do autor" />
 
-  <div *ngIf="showContributors">
-    <h2>Contribuidores</h2>
-    <ul>
-      <li *ngFor="let contributor of contributors">
-        {{ contributor.name }} - {{ contributor.count }} commits
-      </li>
-    </ul>
+    <button (click)="sortCommitsByDate()">Ordenar por Data</button>
+
+    <button (click)="toggleContributors()">Mostrar/Ocultar Contribuidores</button>
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>SHA</th>
-        <th>Mensagem</th>
-        <th>Autor</th>
-        <th>Data</th>
-        <th>URL</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let commit of filteredCommits">
-        <td>{{ commit.sha }}</td>
-        <td>{{ commit.message }}</td>
-        <td>{{ commit.author.name }}</td>
-        <td>{{ commit.date }}</td>
-        <td><a [href]="commit.url" target="_blank">Link</a></td>
-      </tr>
-    </tbody>
-  </table>
+  <div *ngIf="showContributors" class="contributors-container">
+    <h2>Contribuidores</h2>
+    <ul class="contributors-list">
+      <li *ngFor="let contributor of contributors" class="contributor-card">
+        <span class="contributor-name">{{ contributor.name }}</span>
+        <span class="contributor-count"> - {{ contributor.count }} commits</span>
+      </li>
+    </ul>
+  </div>  
+
+  <div class="commit-container">
+    <div class="commit-card" *ngFor="let commit of filteredCommits">
+      <h3>{{ commit.message }}</h3>
+      <p><strong>SHA:</strong> {{ commit.sha }}</p>
+      <p><strong>Autor:</strong> {{ commit.author.name }}</p>
+      <p><strong>Data:</strong> {{ commit.date }}</p>
+      <a class="commit-link" [href]="commit.url" target="_blank">Link</a>
+    </div>
+  </div>
 </div>
