@@ -71,12 +71,12 @@ export class AppComponent implements OnInit {
   }
 
   sortCommitsByDate() {
-    this.commits.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    this.commits = orderBy(this.commits, 'date');
     this.applyFilter(); 
   }
 
   sortCommitsByAuthorName() {
-    this.commits.sort((a, b) => a.author.name.localeCompare(b.author.name));
+    this.commits = orderByName(this.commits, 'author.name');
     this.applyFilter(); 
   }
 
