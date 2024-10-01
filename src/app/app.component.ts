@@ -22,6 +22,9 @@ export class AppComponent implements OnInit {
   showContributors: boolean = false;
   selectedAuthor: string = '';
   private commitsService = inject(CommitsService);
+  
+  private loadLimit: number = 10;
+  private currentLoad: number = 10;
 
   ngOnInit() {
     this.loadCommits();
@@ -37,13 +40,13 @@ export class AppComponent implements OnInit {
   }
 
   applyFilter() {
-    if (this.selectedAuthor) {
-      this.filteredCommits = this.commits.filter(commit =>
-        commit.author.name.toLowerCase().includes(this.selectedAuthor.toLowerCase())
-      );
-    } else {
-      this.filteredCommits = [...this.commits];
-    }
+    const filtered = this.selectedAuthor
+      ? this.commits.filter(commit =>
+          commit.author.name.toLowerCase().includes(this.selectedAuthor.toLowerCase())
+        )
+      : [...this.commits];
+
+    this.filteredCommits = filtered.slice(0, this.currentLoad);
   }
 
   getContributors(): { name: string; count: number }[] {
@@ -60,8 +63,8 @@ export class AppComponent implements OnInit {
 
   getLatestsCommitsByAuthor() {
     const ordenarEDistintos = compose(
-      (commits: Commit[]) => distinct(commits, 'author.name'),
-      (commits: Commit[]) => orderBy(commits, 'date')
+      (commits: Commit[]) => orderBy(commits, 'date'),
+      (commits: Commit[]) => distinct(commits, 'author.name')
     );
   
     this.filteredCommits = ordenarEDistintos(this.commits);
@@ -79,5 +82,10 @@ export class AppComponent implements OnInit {
 
   toggleContributors() {
     this.showContributors = !this.showContributors;
+  }
+
+  loadMoreCommits() {
+    this.currentLoad += this.loadLimit;
+    this.applyFilter();
   }
 }
