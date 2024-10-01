@@ -5,7 +5,7 @@
     <label for="authorFilter">Filtrar por Autor:</label>
     <input id="authorFilter" [(ngModel)]="selectedAuthor" (input)="filterCommitsByAuthor()" placeholder="Digite o nome do autor" />
 
-    <div class="button-container"> <!-- Adicione esta div para os botões -->
+    <div class="button-container">
       <button (click)="sortCommitsByDate()">Ordenar por Data</button>
       <button (click)="toggleContributors()">Mostrar/Ocultar Contribuidores</button>
       <button (click)="getLatestsCommitsByAuthor()">Mostrar último commit por autor</button>
