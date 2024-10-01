@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Observable } from 'rxjs';
 import Commit from '../types/Commit';
@@ -15,48 +15,47 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  commits: Commit[] | undefined;
-  commits$: Observable<Commit[]>;
-  filteredCommits: Commit[] | undefined;
+export class AppComponent implements OnInit {
+  commits: Commit[] = [];
+  filteredCommits: Commit[] = [];
   contributors: { name: string; count: number }[] = [];
   showContributors: boolean = false;
   selectedAuthor: string = '';
-
   private commitsService = inject(CommitsService);
 
-  constructor() {
-    this.commits$ = this.commitsService.getCommits();
+  ngOnInit() {
+    this.loadCommits();
   }
 
-  ngOnInit() {
-    this.commits$.subscribe((data) => {
-      this.commits = data;
-      this.filteredCommits = this.commits.slice(0, 10); // Carrega os primeiros 10 commits inicialmente
+  loadCommits() {
+    this.commitsService.getCommits().subscribe((data) => {
+      this.commits.push(...data);
+      this.applyFilter();
       this.contributors = this.getContributors();
       console.log(this.commits);
     });
   }
 
-  getContributors(): { name: string; count: number }[] {
-    const groupedCommits = groupBy(this.commits || [], 'author.name');
-    const contributors = Object.entries(groupedCommits).map(([name, commits]) => ({
-      name,
-      count: commits.length,
-    }));
-    return orderBy(contributors, 'count');
-  }
-
-  filterCommitsByAuthor() {
-    if (!this.commits) return;
-
+  applyFilter() {
     if (this.selectedAuthor) {
       this.filteredCommits = this.commits.filter(commit =>
         commit.author.name.toLowerCase().includes(this.selectedAuthor.toLowerCase())
-      ).slice(0, 10); // Limite de 10 resultados após o filtro
+      );
     } else {
-      this.filteredCommits = this.commits.slice(0, 10);
+      this.filteredCommits = [...this.commits];
     }
+  }
+
+  getContributors(): { name: string; count: number }[] {
+    const groupedCommits = groupBy(this.commits, 'author.name');
+    return Object.entries(groupedCommits).map(([name, commits]) => ({
+      name,
+      count: commits.length,
+    })).sort((a, b) => b.count - a.count);
+  }
+
+  filterCommitsByAuthor() {
+    this.applyFilter();
   }
 
   getLatestsCommitsByAuthor() {
@@ -65,28 +64,20 @@ export class AppComponent {
       (commits: Commit[]) => orderBy(commits, 'date')
     );
   
-    this.filteredCommits = ordenarEDistintos(this.commits || []).slice(0, 10); // Limite de 10
+    this.filteredCommits = ordenarEDistintos(this.commits);
   }
 
   sortCommitsByDate() {
-    this.commits = orderBy(this.commits || [], 'date');
-    this.filteredCommits = this.commits.slice(0, 10); 
+    this.commits.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    this.applyFilter(); 
   }
 
   sortCommitsByAuthorName() {
-    this.commits = orderByName(this.commits || [], 'author.name');
-    this.filteredCommits = this.commits.slice(0, 10); 
+    this.commits.sort((a, b) => a.author.name.localeCompare(b.author.name));
+    this.applyFilter(); 
   }
 
   toggleContributors() {
     this.showContributors = !this.showContributors;
-  }
-
-  loadMoreCommits() {
-    if (this.commits && this.filteredCommits) {
-      const currentLength = this.filteredCommits.length;
-      const moreCommits = this.commits.slice(currentLength, currentLength + 10);
-      this.filteredCommits = [...this.filteredCommits, ...moreCommits]; // Adiciona mais 10 commits
-    }
   }
 }

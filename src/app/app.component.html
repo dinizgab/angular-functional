@@ -6,8 +6,11 @@
     <input id="authorFilter" [(ngModel)]="selectedAuthor" (input)="filterCommitsByAuthor()" placeholder="Digite o nome do autor" />
 
     <button (click)="sortCommitsByDate()">Ordenar por Data</button>
+
     <button (click)="toggleContributors()">Mostrar/Ocultar Contribuidores</button>
-    <button (click)="getLatestsCommitsByAuthor()">Mostrar último commit por autor</button>
+
+    <button (click)="getLatestsCommitsByAuthor()">Mostrar útlimo commit por autor</button>
+
     <button (click)="sortCommitsByAuthorName()">Ordenar por autor</button>
   </div>
 
@@ -31,5 +34,5 @@
     </div>
   </div>
 
-  <button (click)="loadMoreCommits()">Carregar Mais Commits</button>
+  <button (click)="loadCommits()">Carregar Mais</button>
 </div>
