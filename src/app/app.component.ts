@@ -20,7 +20,6 @@ export class AppComponent {
   commits$: Observable<Commit[]>;
   filteredCommits: Commit[] | undefined;
   contributors: { name: string; count: number }[] = [];
-
   showContributors: boolean = false;
   selectedAuthor: string = '';
 
@@ -33,7 +32,7 @@ export class AppComponent {
   ngOnInit() {
     this.commits$.subscribe((data) => {
       this.commits = data;
-      this.filteredCommits = this.commits;
+      this.filteredCommits = this.commits.slice(0, 10); // Carrega os primeiros 10 commits inicialmente
       this.contributors = this.getContributors();
       console.log(this.commits);
     });
@@ -45,7 +44,6 @@ export class AppComponent {
       name,
       count: commits.length,
     }));
-
     return orderBy(contributors, 'count');
   }
 
@@ -55,9 +53,9 @@ export class AppComponent {
     if (this.selectedAuthor) {
       this.filteredCommits = this.commits.filter(commit =>
         commit.author.name.toLowerCase().includes(this.selectedAuthor.toLowerCase())
-      );
+      ).slice(0, 10); // Limite de 10 resultados após o filtro
     } else {
-      this.filteredCommits = this.commits;
+      this.filteredCommits = this.commits.slice(0, 10);
     }
   }
 
@@ -67,20 +65,28 @@ export class AppComponent {
       (commits: Commit[]) => orderBy(commits, 'date')
     );
   
-    this.filteredCommits = ordenarEDistintos(this.commits || []);
+    this.filteredCommits = ordenarEDistintos(this.commits || []).slice(0, 10); // Limite de 10
   }
 
   sortCommitsByDate() {
     this.commits = orderBy(this.commits || [], 'date');
-    this.filteredCommits = this.commits; 
+    this.filteredCommits = this.commits.slice(0, 10); 
   }
 
   sortCommitsByAuthorName() {
     this.commits = orderByName(this.commits || [], 'author.name');
-    this.filteredCommits = this.commits; 
+    this.filteredCommits = this.commits.slice(0, 10); 
   }
 
   toggleContributors() {
     this.showContributors = !this.showContributors;
+  }
+
+  loadMoreCommits() {
+    if (this.commits && this.filteredCommits) {
+      const currentLength = this.filteredCommits.length;
+      const moreCommits = this.commits.slice(currentLength, currentLength + 10);
+      this.filteredCommits = [...this.filteredCommits, ...moreCommits]; // Adiciona mais 10 commits
+    }
   }
 }
