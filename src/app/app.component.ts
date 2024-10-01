@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import Commit from '../types/Commit';
 import { CommitsService } from './commit/commit.service';
 import { CommitComponent } from './commit/commit.component';
-import { groupBy, orderBy } from './utils/utils'; 
+import { groupBy, orderBy, orderByName, distinct, compose } from './utils/utils'; 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -61,8 +61,22 @@ export class AppComponent {
     }
   }
 
+  getLatestsCommitsByAuthor() {
+    const ordenarEDistintos = compose(
+      (commits: Commit[]) => distinct(commits, 'author.name'),
+      (commits: Commit[]) => orderBy(commits, 'date')
+    );
+  
+    this.filteredCommits = ordenarEDistintos(this.commits || []);
+  }
+
   sortCommitsByDate() {
     this.commits = orderBy(this.commits || [], 'date');
+    this.filteredCommits = this.commits; 
+  }
+
+  sortCommitsByAuthorName() {
+    this.commits = orderByName(this.commits || [], 'author.name');
     this.filteredCommits = this.commits; 
   }
 

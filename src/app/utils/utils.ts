@@ -1,7 +1,8 @@
-export function distinct<T>(colecao: T[], atributo: keyof T): T[] {
+export function distinct<T>(colecao: T[], atributo: string): T[] {
     const seen = new Set();
     return colecao.filter(item => {
-        const value = item[atributo];
+        const keys = atributo.split('.');
+        const value = keys.reduce((o: any, k: string) => o[k], item);
         if (seen.has(value)) {
             return false;
         }
@@ -22,17 +23,31 @@ export function groupBy<T>(collection: T[], attribute: string): Record<string, T
     }, {} as Record<string, T[]>);
 }
 
-export function orderBy<T>(colecao: T[], atributo: keyof T): T[] {
+export function orderByName<T>(colecao: T[], atributo: string): T[] {
     return colecao.slice().sort((a, b) => {
-        if (a[atributo] > b[atributo]) return -1;
-        if (a[atributo] < b[atributo]) return 1;
+        const keys = atributo.split('.');
+        const aValue = keys.reduce((acc: any, key) => acc[key], a);
+        const bValue = keys.reduce((acc: any, key) => acc[key], b);
+
+        return aValue.localeCompare(bValue);
+    });
+}
+
+export function orderBy<T>(colecao: T[], atributo: string): T[] {
+    return colecao.slice().sort((a, b) => {
+        const keys = atributo.split('.');
+        const aValue = keys.reduce((acc: any, key) => acc[key], a);
+        const bValue = keys.reduce((acc: any, key) => acc[key], b);
+
+        if (aValue > bValue) return -1;
+        if (aValue < bValue) return 1;
         return 0;
     });
 }
 
-export function fold<T, U>(reducer: (acc: U, item: T) => U, init: U, array: T[]): U {
-    return array.reduce(reducer, init);
-}
+// export function fold<T, U>(reducer: (acc: U, item: T) => U, init: U, array: T[]): U {
+//     return array.reduce(reducer, init);
+// }
 
 export function compose<A, B, C>(f1: (arg: B) => C, f2: (arg: A) => B) {
     return (arg: A): C => f1(f2(arg));

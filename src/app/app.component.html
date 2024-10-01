@@ -8,6 +8,10 @@
     <button (click)="sortCommitsByDate()">Ordenar por Data</button>
 
     <button (click)="toggleContributors()">Mostrar/Ocultar Contribuidores</button>
+
+    <button (click)="getLatestsCommitsByAuthor()">Mostrar útlimo commit por autor</button>
+
+    <button (click)="sortCommitsByAuthorName()">Ordenar por autor</button>
   </div>
 
   <div *ngIf="showContributors" class="contributors-container">
